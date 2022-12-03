@@ -18,23 +18,23 @@ const mongoose = require('mongoose');
 const { quoteSchema } = require("../models/quote");
 const Quote = mongoose.model('Quote', quoteSchema);
 const getQuotes = () => __awaiter(void 0, void 0, void 0, function* () {
-    Quote.deleteMany({});
-    // let data = [];
+    yield Quote.deleteMany({});
     yield axios_1.default.get('https://api.quotable.io/quotes')
         .then((res) => {
-        let data = res.data.results.sort(() => 0.5 - Math.random());
-        data.forEach((element) => {
-            if (element.author != null && element.en != null) {
+        let data = res.data.results.sort(() => 0.5 - Math.random()).slice(0, 20);
+        data.forEach((element) => __awaiter(void 0, void 0, void 0, function* () {
+            if (element.author != null && element.content != null) {
                 let item = {
                     author: element.author,
-                    content: element.en
+                    content: element.content
                 };
-                Quote.create({
+                const quote = new Quote({
                     author: element.author,
-                    content: element.en
-                }, (err) => console.log(err));
+                    content: element.content,
+                });
+                yield quote.save();
             }
-        });
-    }).catch(err => console.log(err));
+        }));
+    }).then(() => console.log('server log --> Data successfuly fetched')).catch(err => console.log(err));
 });
 exports.getQuotes = getQuotes;

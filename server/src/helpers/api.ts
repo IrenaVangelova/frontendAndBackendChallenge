@@ -7,24 +7,23 @@ import { IQuote } from "../models/IQuote";
 
 export const getQuotes = async() => {
 
-    Quote.deleteMany({});
-    // let data = [];
-    
+    await Quote.deleteMany({});
     await axios.get('https://api.quotable.io/quotes')
         .then((res) => {
-            let data = res.data.results.sort(() => 0.5 - Math.random());
-            data.forEach((element: { author: any; content: any; }) => {
+            let data = res.data.results.sort(() => 0.5 - Math.random()).slice(0,20);
+            data.forEach(async(element: { author: string; content: string; }) => {
                 if (element.author != null && element.content != null) {
                     let item: IQuote = {
                         author: element.author,
                         content: element.content
                     }
-                    Quote.create({
+                    const quote = new Quote({
                         author: element.author,
-                        content: element.content
-                    }, (err) => console.log(err));
+                        content: element.content,
+                    });
+                    await quote.save();
                 }
             });
-        }).catch(err => console.log(err));
+        }).then(() => console.log('server log --> Data successfuly fetched')).catch(err => console.log(err));
 
 }

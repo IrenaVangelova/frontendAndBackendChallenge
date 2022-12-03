@@ -14,7 +14,7 @@ mongoose.connect("mongodb://localhost:27017/Quotes?readPreference=primary&appnam
 
 app.use('/quotes', quotesRouter);
 
-getQuotes();
+// getQuotes();
 
 app.listen(port, () => {
     console.log(`Connected on port ${port}`);

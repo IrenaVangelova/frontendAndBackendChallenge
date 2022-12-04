@@ -3,8 +3,11 @@ const mongoose = require("mongoose");
 const { quoteSchema } = require("../models/quote");
 const Quote = mongoose.model("Quote", quoteSchema);
 
+// Get quotes from third-party api and populate local database
 export const getQuotes = async () => {
+  // Delete the old data to avoid duplicates
   await Quote.deleteMany({});
+  // Repopulate the server with data from third-party api
   await axios
     .get("https://api.quotable.io/quotes")
     .then((res) => {

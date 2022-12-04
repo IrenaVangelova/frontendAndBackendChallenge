@@ -25,8 +25,6 @@ const RandomQuote = () => {
     getRandomQuote();
   }, []);
 
-  console.log(randomQuotesData);
-
   return (
     <div>
       <Card>
@@ -39,7 +37,7 @@ const RandomQuote = () => {
           </Typography>
         </CardContent>
       </Card>
-      <Link to="/quotes" style={{ textDecoration: "none", margin: "5px" }}>
+      <Link to="/" style={{ textDecoration: "none", margin: "5px" }}>
         <Button variant="contained">Back</Button>
       </Link>
       <Button variant="contained" onClick={getRandomQuote}>

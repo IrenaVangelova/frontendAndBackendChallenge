@@ -24,8 +24,8 @@ const Quotes = () => {
   const [quotesData, setQuoteData] = useState<IRow[] | null | undefined>(null);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
-  useEffect(() => {
-    fetch(endpoints.quotes.get)
+  const getQuotesData = async () => {
+    await fetch(endpoints.quotes.get)
       .then((data) => data.json())
       .then((data) => {
         let tableRows: IRow[] = [];
@@ -41,16 +41,26 @@ const Quotes = () => {
         setQuoteData(tableRows);
         setIsLoaded(true);
       });
+  };
+
+  useEffect(() => {
+    getQuotesData();
   }, []);
 
   const getNationality = async (name: string) => {
     let nationality = null;
 
-    //   await fetch("http://api.nationalize.io/?name=" + name, {mode: "no-cors", headers: {
-    //     'Content-Type': 'application/json'
-    //   }})
-    // //   .then((data) => {return data.json()})
-    //   .then((data) => nationality = data.country[0].country_id);
+    await fetch("https://api.nationalize.io/?name=" + name, {
+      method: "GET",
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((data) => {
+        return data.json();
+      })
+      .then((data) => (nationality = data.country[0].country_id));
 
     return nationality;
   };
@@ -80,10 +90,15 @@ const Quotes = () => {
     }
   }, [isLoaded]);
 
+  const generateQuotes = async () => {
+    await fetch(endpoints.quotes.generate).then(() => getQuotesData());
+  };
+
   let table =
     quotesData != null && quotesData.length > 0 ? (
-      <div style={{ height: 630, width: "100%" }}>
+      <div style={{ width: "100%" }}>
         <DataGrid
+          autoHeight={true}
           getRowId={(row) => row._id}
           rows={quotesData}
           columns={columns}
@@ -92,6 +107,9 @@ const Quotes = () => {
         <Link to="/random-quote" style={{ textDecoration: "none" }}>
           <Button variant="contained">Random Quote</Button>
         </Link>
+        <Button variant="contained" onClick={generateQuotes}>
+          Generate
+        </Button>
       </div>
     ) : (
       <Box

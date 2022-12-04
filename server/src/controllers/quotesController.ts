@@ -4,6 +4,7 @@ const Quote = mongoose.model("Quote", quoteSchema);
 import { Request, Response } from "express";
 import { getQuotes } from "../helpers/api";
 
+// Get all quotes
 const all = async (req: Request, res: Response) => {
   let count: number = 50;
   if (req.query["count"]) {
@@ -13,6 +14,7 @@ const all = async (req: Request, res: Response) => {
   res.status(200).send(quotes.slice(0, count));
 };
 
+// Generate new requests
 const generate = async (req: Request, res: Response) => {
   await getQuotes();
   res.status(200).send();

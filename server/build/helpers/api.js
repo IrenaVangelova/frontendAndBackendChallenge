@@ -14,12 +14,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getQuotes = void 0;
 const axios_1 = __importDefault(require("axios"));
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const { quoteSchema } = require("../models/quote");
-const Quote = mongoose.model('Quote', quoteSchema);
+const Quote = mongoose.model("Quote", quoteSchema);
 const getQuotes = () => __awaiter(void 0, void 0, void 0, function* () {
     yield Quote.deleteMany({});
-    yield axios_1.default.get('https://api.quotable.io/quotes')
+    yield axios_1.default
+        .get("https://api.quotable.io/quotes")
         .then((res) => {
         let data = res.data.results.sort(() => 0.5 - Math.random()).slice(0, 20);
         data.forEach((element) => __awaiter(void 0, void 0, void 0, function* () {
@@ -31,6 +32,8 @@ const getQuotes = () => __awaiter(void 0, void 0, void 0, function* () {
                 yield quote.save();
             }
         }));
-    }).then(() => console.log('server log --> Data successfuly fetched')).catch(err => console.log(err));
+    })
+        .then(() => console.log("server log --> Data successfuly fetched"))
+        .catch((err) => console.log(err));
 });
 exports.getQuotes = getQuotes;

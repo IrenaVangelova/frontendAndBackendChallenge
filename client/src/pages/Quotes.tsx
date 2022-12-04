@@ -1,101 +1,116 @@
-// import React, { useEffect, useState } from "react";
-// import { DataGrid } from '@mui/x-data-grid';
-// import { Button } from "@mui/material";
-// import {CircularProgress} from "@mui/material";
-// import Box from '@mui/material/Box';
+import React, { useEffect, useState } from "react";
+import { DataGrid } from "@mui/x-data-grid";
+import { Button } from "@mui/material";
+import { CircularProgress } from "@mui/material";
+import Box from "@mui/material/Box";
+import { endpoints } from "../helpers/api";
+import { Link } from "react-router-dom";
 
-// const columns = [
-//   { field: '_id', headerName: 'ID', width: 150 },
-//   { field: 'author', headerName: 'Author', width: 200 },
-//   { field: 'content', headerName: 'Content', width: 800 },
-//   { field: 'nationality', headerName: 'Nationality', width: 100 }
-// ];
+const columns = [
+  { field: "_id", headerName: "ID", width: 150 },
+  { field: "author", headerName: "Author", width: 200 },
+  { field: "content", headerName: "Content", width: 800 },
+  { field: "nationality", headerName: "Nationality", width: 100 },
+];
 
-// const Quotes = () => {
+interface IRow {
+  _id: string;
+  author: string;
+  content: string;
+  nationality: string;
+}
 
-//     const [quotesData, setQuoteData] = useState(null);
-//     const [isLoaded, setIsLoaded] = useState(false);
+const Quotes = () => {
+  const [quotesData, setQuoteData] = useState<IRow[] | null | undefined>(null);
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
-//     useEffect(() => {
-//       fetch("https://localhost:3000/quotes")
-//       .then((data) => data.json())
-//         .then((data) => {
-//           let tableRows = [];
-//           data.results.forEach((element) => {
-//             let row = {
-//               _id: element._id,
-//               author: element.author,
-//               content: element.content,
-//               nationality: ""
-//             }
-//             tableRows.push(row);
-//           });
-//           setQuoteData(tableRows);
-//           setIsLoaded(true)
-//         });
-//       },[])
+  useEffect(() => {
+    fetch(endpoints.quotes.get)
+      .then((data) => data.json())
+      .then((data) => {
+        let tableRows: IRow[] = [];
+        data.forEach((element: any) => {
+          let row: IRow = {
+            _id: element._id,
+            author: element.author,
+            content: element.content,
+            nationality: "",
+          };
+          tableRows.push(row);
+        });
+        setQuoteData(tableRows);
+        setIsLoaded(true);
+      });
+  }, []);
 
-//     const getNationality = async (name) => {
-     
-//       let nationality = null;
+  const getNationality = async (name: string) => {
+    let nationality = null;
 
-//       await fetch("https://api.nationalize.io/?name=" + name, {method: 'GET', mode: "cors", headers: {
-//         'Content-Type': 'application/json'
-//       }})
-//       .then((data) => {return data.json()})
-//       .then((data) => nationality = data.country[0].country_id);
-    
-//       return nationality;
-//     }
+    //   await fetch("http://api.nationalize.io/?name=" + name, {mode: "no-cors", headers: {
+    //     'Content-Type': 'application/json'
+    //   }})
+    // //   .then((data) => {return data.json()})
+    //   .then((data) => nationality = data.country[0].country_id);
 
-//     const populateNationality = async () => {
-//     if (quotesData != null) {
-//       let newData = quotesData;
-//       newData.forEach(async (element) => {
-//         let nationality = await getNationality(element.author.split(" ")[0]);
-//         element.nationality = nationality;
-//       });
+    return nationality;
+  };
 
-//       setQuoteData(newData);
-//       setIsLoaded(false);
-//     }
-//   }
+  const populateNationality = async () => {
+    if (quotesData != null && quotesData.length > 0) {
+      let newData = quotesData;
+      newData.forEach(async (element) => {
+        let nationality: string | null | undefined = await getNationality(
+          element.author.split(" ")[0]
+        );
+        if (nationality != null) {
+          element.nationality = nationality;
+        } else {
+          element.nationality = "";
+        }
+      });
 
-//   useEffect(() => {
-//     if(isLoaded) {
-//       populateNationality();
-//     }
-//   }, [isLoaded])
+      setQuoteData(newData);
+      setIsLoaded(false);
+    }
+  };
 
-//   // useEffect(() => {
-//   //   console.log(quotesData);
-//   // },[quotesData])
+  useEffect(() => {
+    if (isLoaded) {
+      populateNationality();
+    }
+  }, [isLoaded]);
 
+  let table =
+    quotesData != null && quotesData.length > 0 ? (
+      <div style={{ height: 630, width: "100%" }}>
+        <DataGrid
+          getRowId={(row) => row._id}
+          rows={quotesData}
+          columns={columns}
+          pageSize={10}
+        />
+        <Link to="/random-quote" style={{ textDecoration: "none" }}>
+          <Button variant="contained">Random Quote</Button>
+        </Link>
+      </div>
+    ) : (
+      <Box
+        sx={{
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          position: "absolute",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
 
-//   let table = quotesData != null ? (<div style={{ height: 630, width: '100%' }}><DataGrid
-//     getRowId={(row) => row._id}
-//     rows={quotesData}
-//     columns={columns}
-//     pageSize={10}
-//   />
-//     <Button variant="contained" href="http://localhost:3000/random-quote">Random Quote</Button></div>) : (<Box sx={{
-//       top: 0,
-//       left: 0,
-//       bottom: 0,
-//       right: 0,
-//       position: 'absolute',
-//       display: 'flex',
-//       alignItems: 'center',
-//       justifyContent: 'center',
-//     }}><CircularProgress /></Box>);
-    
-//   return (
-//     <div style={{ height: 630, width: '100%' }}>
-//         {table}
-//     </div>
-//   );
+  return <div style={{ height: 630, width: "100%" }}>{table}</div>;
+};
 
-// } 
-
-// export default Quotes;
-export {}
+export default Quotes;

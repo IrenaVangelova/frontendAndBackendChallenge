@@ -1,14 +1,13 @@
-import { Schema, model, connect } from 'mongoose';
-import { IQuote } from './IQuote';
+import { Schema, model, connect } from "mongoose";
+import { IQuote } from "./IQuote";
 
 export const quoteSchema = new Schema<IQuote>({
   author: {
     type: String,
-    required: true
+    required: true,
   },
   content: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
-

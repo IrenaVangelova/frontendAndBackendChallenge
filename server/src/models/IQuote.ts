@@ -1,4 +1,4 @@
 export interface IQuote {
-    author: string;
-    content: string;
-};
+  author: string;
+  content: string;
+}

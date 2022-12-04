@@ -14,7 +14,11 @@ const { quoteSchema } = require("../models/quote");
 const Quote = mongoose.model('Quote', quoteSchema);
 const api_1 = require("../helpers/api");
 const all = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let count = Number(req.query['count']);
+    let count = 50;
+    if (req.query['count']) {
+        count = Number(req.query['count']);
+    }
+    console.log(req.query['count']);
     const quotes = yield Quote.find();
     res.status(200).send(quotes.slice(0, count));
 });

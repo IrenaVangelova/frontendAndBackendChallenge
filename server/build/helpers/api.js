@@ -24,10 +24,6 @@ const getQuotes = () => __awaiter(void 0, void 0, void 0, function* () {
         let data = res.data.results.sort(() => 0.5 - Math.random()).slice(0, 20);
         data.forEach((element) => __awaiter(void 0, void 0, void 0, function* () {
             if (element.author != null && element.content != null) {
-                let item = {
-                    author: element.author,
-                    content: element.content
-                };
                 const quote = new Quote({
                     author: element.author,
                     content: element.content,
